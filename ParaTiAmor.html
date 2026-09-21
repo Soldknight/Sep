@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>FELIZ DIA AMOR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@400;600;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #020202;
+            touch-action: none;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+        }
+
+        /* PANTALLA DE INICIO CON USAGUI */
+        #pantalla-inicio {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, #1b1600 0%, #000 70%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: opacity 1.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .usagui-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: saltito 0.8s ease-in-out infinite alternate;
+        }
+
+        .usagui-img {
+            width: 190px;
+            height: auto;
+            filter: drop-shadow(0 0 25px rgba(255, 230, 0, 0.85));
+            transition: transform 0.2s ease;
+        }
+
+        .usagui-spin {
+            animation: girarVolando 1.2s cubic-bezier(0.2, 0.8, 0.4, 1.2) forwards !important;
+        }
+
+        .texto-inicio {
+            color: #fffbcf;
+            margin-top: 25px;
+            font-size: 24px;
+            font-family: 'Dancing Script', cursive;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px #ffd700;
+            animation: latidoTexto 1.5s infinite alternate;
+        }
+
+        @keyframes saltito {
+            0% { transform: translateY(0) scale(1, 1); }
+            100% { transform: translateY(-35px) scale(0.95, 1.05); }
+        }
+
+        @keyframes latidoTexto {
+            0% { opacity: 0.6; transform: scale(0.96); }
+            100% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 25px #ffff33; }
+        }
+
+        @keyframes girarVolando {
+            0% { transform: translateX(0) translateY(0) rotate(0deg) scale(1); }
+            20% { transform: translateX(-40px) translateY(20px) rotate(-35deg) scale(1.15); }
+            100% { transform: translateX(130vw) translateY(-250px) rotate(1440deg) scale(0.4); }
+        }
+
+        /* TÍTULO PRINCIPAL */
+        #titulo-principal {
+            position: absolute;
+            top: 25px;
+            width: 100%;
+            text-align: center;
+            color: #fff677;
+            font-family: 'Dancing Script', cursive;
+            font-size: 46px;
+            font-weight: 700;
+            pointer-events: none;
+            text-shadow: 0 0 25px #ffd700, 0 0 45px #ffb700, 0 2px 5px rgba(0,0,0,0.9);
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 2s ease-in;
+            line-height: 1.15;
+        }
+
+        /* ========================================================= */
+        /* BOTÓN TRANSPARENTE / GLASSMORPHISM (ARRIBA DEL AGUJERO)   */
+        /* ========================================================= */
+        #btn-poema {
+            position: absolute;
+            top: calc(50% - 85px); /* Justo arriba del centro donde está el agujero negro */
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 15, 0, 0.45); /* Fondo semitransparente oscuro */
+            backdrop-filter: blur(6px); /* Efecto cristal esmerilado */
+            color: #ffea75;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 7px 16px;
+            border: 1px solid rgba(255, 215, 0, 0.5); /* Borde dorado sutil */
+            border-radius: 30px;
+            cursor: pointer;
+            z-index: 80;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s ease-in, transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        #btn-poema:hover {
+            transform: translateX(-50%) scale(1.06);
+            background: rgba(40, 30, 0, 0.65);
+            border-color: rgba(255, 230, 0, 0.9);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.35);
+        }
+
+        #btn-poema:active {
+            transform: translateX(-50%) scale(0.96);
+        }
+
+        /* ========================================================= */
+        /* MODAL DEL POEMA (FONDO OPACO OSCURO Y TARJETA FLOTANTE)  */
+        /* ========================================================= */
+        #modal-poema {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.85); /* Fondo súper opaco para aislar el poema */
+            backdrop-filter: blur(10px); /* Efecto difuminado elegante */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            padding: 20px;
+        }
+
+        #modal-poema.activo {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .tarjeta-poema {
+            background: linear-gradient(145deg, #181500, #0a0a00);
+            border: 2px solid #ffcc00;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 460px;
+            max-height: 85vh;
+            padding: 25px 20px;
+            box-shadow: 0 0 40px rgba(255, 204, 0, 0.35), 0 10px 30px rgba(0,0,0,0.9);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #modal-poema.activo .tarjeta-poema {
+            transform: scale(1);
+        }
+
+        .tarjeta-poema h2 {
+            color: #ffe600;
+            font-family: 'Dancing Script', cursive;
+            font-size: 34px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+
+        .texto-poema {
+            color: #fffdec;
+            font-size: 14.5px;
+            line-height: 1.7;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            white-space: pre-line;
+            margin-bottom: 22px;
+        }
+
+        .btn-cerrar-poema {
+            background: transparent;
+            color: #ffcc00;
+            border: 2px solid #ffcc00;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 7px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cerrar-poema:hover {
+            background: #ffcc00;
+            color: #000;
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.8);
+        }
+
+        /* CANVAS DE EFECTO CORAZÓN PIXEL Y COMETAS 2D */
+        #fx-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        @media (max-width: 600px) {
+            #titulo-principal { font-size: 32px; top: 16px; }
+            #btn-poema { top: calc(50% - 75px); font-size: 12px; padding: 6px 14px; }
+            .tarjeta-poema { padding: 20px 16px; max-height: 80vh; }
+            .tarjeta-poema h2 { font-size: 28px; }
+            .texto-poema { font-size: 13.5px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- PANTALLA INICIAL INTERACTIVA -->
+    <div id="pantalla-inicio">
+        <div class="usagui-container" id="usagui-wrapper">
+            <img src="./img/usagui1.png" alt="Usagui" id="usagui-img" class="usagui-img" onerror="this.src='https://placehold.co/220x220/transparent/ffd700?text=Usagui+1'">
+        </div>
+        <div class="texto-inicio" id="texto-inicio">✨ Toca para abrir amor ✨</div>
+    </div>
+
+    <div id="titulo-principal">
+        Feliz dia amor <br>Te mereces estas flores 💛
+    </div>
+
+    <!-- BOTÓN TRANSPARENTE FLOTANTE ARRIBA DEL AGUJERO NEGRO -->
+    <button id="btn-poema">📜 Ver Poema </button>
+
+    <!-- MODAL / SECCIÓN DEL POEMA CON FONDO OPACO -->
+    <div id="modal-poema">
+        <div class="tarjeta-poema">
+            <h2>Para ti, corazon :3 </h2>
+            <div class="texto-poema">
+                A veces te miro y no lo puedo creer.
+                 Pienso en cómo llegaste a cambiar mi mundo sin hacer ruido,
+                en cómo tu risa se volvió mi sonido favorito
+                y tus ojos, el único lugar donde ya sé habitar.
+                Eres ese pensamiento que se me cruza al despertar
+                y el último que se queda conmigo antes de cerrar los ojos.
+                El refugio donde mi mente descansa
+                cuando todo lo demás pesa demasiado.
+                No sé si te lo digo las veces suficientes,
+                pero te amo de una forma que a veces me asusta por lo inmensa que es.
+                Eres esa casualidad tan hermosa que la vida me regaló,
+                la persona por la que daría lo que fuera
+                con tal de verte sonreír y saberte feliz,
+                porque verte a ti es saber que la vida vale la pena.
+                Y si el día de mañana me dieran a elegir
+                entre volver a nacer o vivir mil vidas más,
+                no lo dudaría ni un solo segundo:
+                te elegiría a ti,
+                en todas y cada una de ellas,
+                para caminar siempre de tu mano
+
+                Siempre brillas, mi niña hermosa. 💛✨
+            </div>
+            <button class="btn-cerrar-poema" id="btn-cerrar">Cerrar ✨</button>
+        </div>
+    </div>
+
+    <canvas id="fx-canvas"></canvas>
+
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
+        import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+        import { EffectComposer } from 'https://unpkg.com/three@0.126.1/examples/jsm/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'https://unpkg.com/three@0.126.1/examples/jsm/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'https://unpkg.com/three@0.126.1/examples/jsm/postprocessing/UnrealBloomPass.js';
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x020202, 0.0006);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 3000);
+        if (window.innerHeight > window.innerWidth) {
+            camera.position.set(0, 35, 95);
+        } else {
+            camera.position.set(0, 22, 75);
+        }
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.0;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.55;
+        controls.maxDistance = 600;
+        controls.minDistance = 15;
+        controls.enablePan = false;
+
+        const blackHoleGeom = new THREE.SphereGeometry(6.5, 64, 64);
+        const blackHole = new THREE.Mesh(
+            blackHoleGeom,
+            new THREE.MeshBasicMaterial({ color: 0x000000 })
+        );
+        scene.add(blackHole);
+
+        const photonRing = new THREE.Mesh(
+            new THREE.SphereGeometry(6.8, 64, 64),
+            new THREE.MeshBasicMaterial({
+                color: 0xffcc33,
+                transparent: true,
+                opacity: 0.6,
+                side: THREE.BackSide,
+                blending: THREE.AdditiveBlending
+            })
+        );
+        scene.add(photonRing);
+
+        const outerHalo = new THREE.Mesh(
+            new THREE.SphereGeometry(7.4, 64, 64),
+            new THREE.MeshBasicMaterial({
+                color: 0xffaa00,
+                transparent: true,
+                opacity: 0.2,
+                side: THREE.BackSide,
+                blending: THREE.AdditiveBlending
+            })
+        );
+        scene.add(outerHalo);
+
+        function crearTexturaDiscoAmarillo() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024; canvas.height = 1024;
+            const ctx = canvas.getContext('2d');
+            const cx = 512, cy = 512;
+
+            const gradient = ctx.createRadialGradient(cx, cy, 110, cx, cy, 512);
+            gradient.addColorStop(0.00, "rgba(0, 0, 0, 0)");
+            gradient.addColorStop(0.08, "rgba(255, 250, 200, 0.75)");
+            gradient.addColorStop(0.18, "rgba(255, 215, 0, 0.75)");
+            gradient.addColorStop(0.35, "rgba(255, 160, 0, 0.6)");
+            gradient.addColorStop(0.65, "rgba(180, 80, 0, 0.2)");
+            gradient.addColorStop(1.00, "rgba(0, 0, 0, 0)");
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1024, 1024);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        const energyTexture = crearTexturaDiscoAmarillo();
+        const diskMat = new THREE.MeshBasicMaterial({
+            map: energyTexture,
+            transparent: true,
+            opacity: 0.75,
+            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const disco = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), diskMat);
+        disco.rotation.x = -Math.PI / 2;
+        scene.add(disco);
+
+        const lente = new THREE.Mesh(new THREE.PlaneGeometry(62, 62), diskMat.clone());
+        lente.rotation.y = Math.PI / 2;
+        lente.rotation.z = 0.25;
+        lente.scale.set(0.9, 0.9, 1);
+        lente.material.opacity = 0.65;
+        scene.add(lente);
+
+        function crearGirasolSolitario() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512; canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            const cx = 256, cy = 230, radius = 135;
+
+            ctx.lineWidth = 14; ctx.strokeStyle = '#27571f';
+            ctx.beginPath(); ctx.moveTo(cx, cy + 20);
+            ctx.quadraticCurveTo(cx + 40, cy + 180, cx + 15, cy + 280); ctx.stroke();
+
+            ctx.fillStyle = '#3f822a'; ctx.beginPath();
+            ctx.ellipse(cx - 50, cy + 140, 60, 24, Math.PI / 5, 0, Math.PI * 2); ctx.fill();
+
+            for(let layer = 0; layer < 2; layer++) {
+                const petals = 14 + layer * 4;
+                const offset = layer === 0 ? 0 : Math.PI / petals;
+                const length = layer === 0 ? radius : radius * 0.85;
+
+                for (let i = 0; i < petals; i++) {
+                    ctx.save(); ctx.translate(cx, cy);
+                    ctx.rotate((Math.PI * 2 / petals) * i + offset);
+
+                    const grad = ctx.createLinearGradient(0, 20, 0, length);
+                    grad.addColorStop(0, '#ff7700'); grad.addColorStop(0.4, '#ffc700'); grad.addColorStop(0.9, '#ffff55'); grad.addColorStop(1, '#ffffff');
+                    ctx.fillStyle = grad; ctx.beginPath();
+                    ctx.moveTo(0, 20); ctx.lineTo(24, length * 0.55); ctx.lineTo(0, length); ctx.lineTo(-24, length * 0.55);
+                    ctx.closePath(); ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            ctx.fillStyle = '#261309'; ctx.beginPath(); ctx.arc(cx, cy, radius * 0.36, 0, Math.PI * 2); ctx.fill();
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function crearRamoAmarilloVibrante() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512; canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            function dibujarFlorCopa(x, y, scale, angle, hueShift = 0) {
+                ctx.save(); ctx.translate(x, y); ctx.rotate(angle); ctx.scale(scale, scale);
+                ctx.strokeStyle = '#437a28'; ctx.lineWidth = 7;
+                ctx.beginPath(); ctx.moveTo(0, 20); ctx.quadraticCurveTo(5, 70, 0, 130); ctx.stroke();
+
+                const grad = ctx.createLinearGradient(-25, -40, 25, 40);
+                grad.addColorStop(0, '#ff9900'); grad.addColorStop(0.5, hueShift ? '#fff355' : '#ffc700'); grad.addColorStop(1, '#ffffff');
+                ctx.fillStyle = grad; ctx.beginPath();
+                ctx.bezierCurveTo(-24, -20, -30, 20, -15, 45, 0, 45);
+                ctx.bezierCurveTo(15, 45, 30, 20, 24, -20); ctx.closePath(); ctx.fill();
+                ctx.restore();
+            }
+
+            dibujarFlorCopa(200, 150, 1.0, -0.28, 1);
+            dibujarFlorCopa(312, 155, 0.95, 0.28, 0);
+            dibujarFlorCopa(256, 120, 1.15, 0, 1);
+            dibujarFlorCopa(256, 240, 1.25, 0, 0);
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function crearTextoGalactico(texto) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512; canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+
+            ctx.font = "900 46px 'Poppins', sans-serif";
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+
+            ctx.strokeStyle = "#3e2004";
+            ctx.lineWidth = 8;
+            ctx.lineJoin = "round";
+            ctx.strokeText(texto, 256, 64);
+
+            const grad = ctx.createLinearGradient(0, 30, 0, 96);
+            grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.4, '#ffea75'); grad.addColorStop(1, '#ff9d00');
+            ctx.fillStyle = grad;
+            ctx.fillText(texto, 256, 64);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        const misPalabras = [
+            "Te amo", "Mi flor favorita 🌻", "Luz en mi vida ✨", "Eres mi sol",
+            "Flores para ti 💛", "Mi niña hermosa", "Sonríe siempre", "Eres mi todo",
+            "Atesoro tu compañía", "Pura alegría", "Siempre brillas", "Solo tú",
+            "Un detalle amarillo", "Mi mundo entero", "Feliz día 🌻", "Juntos siempre"
+        ];
+
+        const matGirasol = new THREE.SpriteMaterial({ map: crearGirasolSolitario(), transparent: true });
+        const matRamo = new THREE.SpriteMaterial({ map: crearRamoAmarilloVibrante(), transparent: true });
+
+        const misImagenesUsagui = ["./img/usagui_float1.png", "./img/usagui_float2.png", "./img/usagui1.png", "./img/usagui2.png"];
+        const textureLoader = new THREE.TextureLoader();
+        const usaguiTextures = misImagenesUsagui.map(path => textureLoader.load(path, undefined, undefined, () => {}));
+
+        const objectsGroup = new THREE.Group();
+        const animables = [];
+        const TOTAL_OBJETOS = 260;
+
+        for(let i = 0; i < TOTAL_OBJETOS; i++) {
+            const rand = Math.random();
+            let sprite, tipo;
+
+            if (rand < 0.28) {
+                sprite = new THREE.Sprite(matGirasol);
+                sprite.scale.set(16, 16, 1);
+                tipo = 'girasol';
+            } else if (rand < 0.45) {
+                sprite = new THREE.Sprite(matRamo);
+                sprite.scale.set(19, 19, 1);
+                tipo = 'ramo';
+            } else if (rand < 0.58) {
+                const chosenTex = usaguiTextures[Math.floor(Math.random() * usaguiTextures.length)];
+                const matUsagui = new THREE.SpriteMaterial({
+                    map: chosenTex,
+                    transparent: true,
+                    blending: THREE.NormalBlending,
+                    depthWrite: false
+                });
+                sprite = new THREE.Sprite(matUsagui);
+                sprite.scale.set(18, 18, 1);
+                tipo = 'usagui';
+            } else {
+                const txt = misPalabras[Math.floor(Math.random() * misPalabras.length)];
+                sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: crearTextoGalactico(txt), transparent: true }));
+                sprite.scale.set(24, 6, 1);
+                tipo = 'texto';
+            }
+
+            const radius = 50 + Math.random() * 180;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+
+            const x = radius * Math.sin(phi) * Math.cos(theta);
+            const y = radius * Math.sin(phi) * Math.sin(theta);
+            const z = radius * Math.cos(phi);
+
+            sprite.position.set(x, y, z);
+            objectsGroup.add(sprite);
+
+            animables.push({
+                mesh: sprite,
+                tipo: tipo,
+                yBase: y,
+                amplitude: 2 + Math.random() * 4,
+                speed: 0.015 + Math.random() * 0.02,
+                phase: Math.random() * Math.PI * 2
+            });
+        }
+        scene.add(objectsGroup);
+
+        const nearStarsCount = 2000;
+        const nearGeo = new THREE.BufferGeometry();
+        const nearPos = new Float32Array(nearStarsCount * 3);
+        for(let i = 0; i < nearStarsCount * 3; i += 3) {
+            nearPos[i] = (Math.random() - 0.5) * 200;
+            nearPos[i+1] = (Math.random() - 0.5) * 200;
+            nearPos[i+2] = (Math.random() - 0.5) * 200;
+        }
+        nearGeo.setAttribute('position', new THREE.BufferAttribute(nearPos, 3));
+        scene.add(new THREE.Points(nearGeo, new THREE.PointsMaterial({ size: 1.0, color: 0xffda55, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending })));
+
+        const deepStarsCount = 30000;
+        const deepGeo = new THREE.BufferGeometry();
+        const deepPos = new Float32Array(deepStarsCount * 3);
+        for(let i = 0; i < deepStarsCount * 3; i += 3) {
+            deepPos[i] = (Math.random() - 0.5) * 3000;
+            deepPos[i+1] = (Math.random() - 0.5) * 3000;
+            deepPos[i+2] = (Math.random() - 0.5) * 3000;
+        }
+        deepGeo.setAttribute('position', new THREE.BufferAttribute(deepPos, 3));
+        scene.add(new THREE.Points(deepGeo, new THREE.PointsMaterial({ size: 0.6, color: 0xdddddd, transparent: true, opacity: 0.6 })));
+
+        const renderScene = new RenderPass(scene, camera);
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.45, 0.4, 0.45);
+        
+        const composer = new EffectComposer(renderer);
+        composer.addPass(renderScene);
+        composer.addPass(bloomPass);
+
+        const fxCanvas = document.getElementById('fx-canvas');
+        const fxCtx = fxCanvas.getContext('2d');
+
+        function resizeFxCanvas() {
+            fxCanvas.width = window.innerWidth;
+            fxCanvas.height = window.innerHeight;
+        }
+        resizeFxCanvas();
+        window.addEventListener('resize', resizeFxCanvas);
+
+        const PIXEL_HEART = [
+            [0,1,1,0,0,1,1,0],
+            [1,2,2,1,1,2,2,1],
+            [1,2,1,1,1,1,2,1],
+            [1,1,1,1,1,1,1,1],
+            [0,1,1,1,1,1,1,0],
+            [0,0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0,0]
+        ];
+
+        const pixelHearts = [];
+        const heartDebris = [];
+        const usagiComets = [];
+
+        const cometImage = new Image();
+        cometImage.src = "./img/usagui_comet.png";
+        cometImage.onerror = () => { cometImage.src = "./img/usagui2.png"; };
+
+        function spawnUsagiComet() {
+            const startX = Math.random() * (window.innerWidth * 0.8) + (window.innerWidth * 0.1);
+            const speed = 7 + Math.random() * 6;
+            const angle = (Math.PI / 4) + (Math.random() - 0.5) * 0.3;
+            usagiComets.push({
+                x: startX, y: -80,
+                vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+                rot: 0, rotSpeed: 0.07 + Math.random() * 0.06,
+                size: 70, trail: []
+            });
+            setTimeout(spawnUsagiComet, 4000 + Math.random() * 4000);
+        }
+        setTimeout(spawnUsagiComet, 2000);
+
+        function triggerPixelHeart(x, y) {
+            pixelHearts.push({ x: x, y: y, scale: 0.2, maxScale: 3.5 + Math.random() * 1.5, alpha: 1 });
+        }
+
+        function createHeartExplosion(x, y) {
+            for (let i = 0; i < 35; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 2 + Math.random() * 6;
+                heartDebris.push({
+                    x: x, y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed - 1.2,
+                    size: 4 + Math.random() * 5,
+                    color: Math.random() > 0.3 ? '#ffea00' : '#ffffff',
+                    alpha: 1, decay: 0.02 + Math.random() * 0.02, gravity: 0.1
+                });
+            }
+        }
+
+        function updateAndDraw2D() {
+            fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+
+            for(let i = usagiComets.length - 1; i >= 0; i--) {
+                const c = usagiComets[i];
+                c.x += c.vx; c.y += c.vy; c.rot += c.rotSpeed;
+                c.trail.push({ x: c.x, y: c.y, alpha: 0.8 });
+                if (c.trail.length > 15) c.trail.shift();
+
+                for (let t = 0; t < c.trail.length; t++) {
+                    const pt = c.trail[t];
+                    pt.alpha *= 0.85;
+                    fxCtx.fillStyle = `rgba(255, 220, 0, ${pt.alpha})`;
+                    fxCtx.shadowColor = '#ffea00';
+                    fxCtx.shadowBlur = 12;
+                    fxCtx.beginPath();
+                    fxCtx.arc(pt.x, pt.y, (t / c.trail.length) * 12, 0, Math.PI * 2);
+                    fxCtx.fill();
+                }
+
+                fxCtx.save();
+                fxCtx.translate(c.x, c.y);
+                fxCtx.rotate(c.rot);
+                fxCtx.shadowColor = '#ffff00';
+                fxCtx.shadowBlur = 20;
+                fxCtx.drawImage(cometImage, -c.size / 2, -c.size / 2, c.size, c.size);
+                fxCtx.restore();
+
+                if (c.y > window.innerHeight + 100 || c.x > window.innerWidth + 100) {
+                    usagiComets.splice(i, 1);
+                }
+            }
+
+            for(let i = pixelHearts.length - 1; i >= 0; i--) {
+                const h = pixelHearts[i];
+                h.scale += 0.22;
+                const ps = h.scale;
+                fxCtx.save();
+                fxCtx.translate(h.x - (8 * ps)/2, h.y - (7 * ps)/2);
+                fxCtx.shadowColor = '#ffff22';
+                fxCtx.shadowBlur = 15;
+
+                for (let r = 0; r < PIXEL_HEART.length; r++) {
+                    for (let c = 0; c < PIXEL_HEART[r].length; c++) {
+                        if (PIXEL_HEART[r][c] === 1) {
+                            fxCtx.fillStyle = '#ffea00';
+                            fxCtx.fillRect(c * ps, r * ps, ps, ps);
+                        } else if (PIXEL_HEART[r][c] === 2) {
+                            fxCtx.fillStyle = '#ffffff';
+                            fxCtx.fillRect(c * ps, r * ps, ps, ps);
+                        }
+                    }
+                }
+                fxCtx.restore();
+
+                if (h.scale >= h.maxScale) {
+                    createHeartExplosion(h.x, h.y);
+                    pixelHearts.splice(i, 1);
+                }
+            }
+
+            for(let i = heartDebris.length - 1; i >= 0; i--) {
+                const p = heartDebris[i];
+                p.x += p.vx; p.y += p.vy; p.vy += p.gravity; p.alpha -= p.decay;
+                if (p.alpha <= 0) { heartDebris.splice(i, 1); continue; }
+                fxCtx.save();
+                fxCtx.fillStyle = p.color; fxCtx.globalAlpha = p.alpha;
+                fxCtx.shadowColor = '#ffea00'; fxCtx.shadowBlur = 8;
+                fxCtx.fillRect(p.x, p.y, p.size, p.size);
+                fxCtx.restore();
+            }
+
+            requestAnimationFrame(updateAndDraw2D);
+        }
+        updateAndDraw2D();
+
+        let clockTime = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            clockTime += 1;
+
+            disco.rotation.z -= 0.002;
+            lente.rotation.z += 0.001;
+            objectsGroup.rotation.y += 0.0005;
+
+            for(let i = 0; i < animables.length; i++) {
+                const item = animables[i];
+                item.mesh.position.y = item.yBase + Math.sin(clockTime * item.speed + item.phase) * item.amplitude;
+            }
+
+            composer.render();
+        }
+        animate();
+
+        const pantallaInicio = document.getElementById('pantalla-inicio');
+        const tituloPrincipal = document.getElementById('titulo-principal');
+        const usaguiWrapper = document.getElementById('usagui-wrapper');
+        const usaguiImg = document.getElementById('usagui-img');
+        const textoInicio = document.getElementById('texto-inicio');
+        const btnPoema = document.getElementById('btn-poema');
+        const modalPoema = document.getElementById('modal-poema');
+        const btnCerrar = document.getElementById('btn-cerrar');
+
+        let appIniciada = false;
+
+        const sonidoUsagui = new Audio();
+        sonidoUsagui.src = "./music/usagui_sound.mp3";
+        sonidoUsagui.volume = 0.8;
+
+        const reproductor = new Audio();
+        reproductor.src = "./music/flores_amarillas.mp3";
+        reproductor.volume = 0.65;
+        reproductor.loop = true;
+
+        pantallaInicio.addEventListener('click', (e) => {
+            if (appIniciada) return;
+            appIniciada = true;
+
+            triggerPixelHeart(e.clientX || window.innerWidth / 2, e.clientY || window.innerHeight / 2);
+            sonidoUsagui.play().catch(err => console.log("Audio de usagui pendiente"));
+
+            textoInicio.style.opacity = '0';
+            usaguiImg.src = "./img/usagui2.png";
+            usaguiWrapper.classList.add('usagui-spin');
+
+            setTimeout(() => {
+                pantallaInicio.style.opacity = '0';
+                reproductor.play().catch(err => console.log("Música principal pendiente"));
+
+                setTimeout(() => {
+                    pantallaInicio.style.display = 'none';
+                    tituloPrincipal.style.opacity = '1';
+                    btnPoema.style.opacity = '1';
+                    btnPoema.style.pointerEvents = 'auto';
+                }, 1300);
+            }, 850);
+        });
+
+        // Eventos para abrir y cerrar el poema
+        btnPoema.addEventListener('click', () => {
+            modalPoema.classList.add('activo');
+        });
+
+        btnCerrar.addEventListener('click', () => {
+            modalPoema.classList.remove('activo');
+        });
+
+        modalPoema.addEventListener('click', (e) => {
+            if (e.target === modalPoema) {
+                modalPoema.classList.remove('activo');
+            }
+        });
+
+        window.addEventListener('click', (e) => {
+            if (!appIniciada) return;
+            if (e.target === btnPoema || e.target.closest('#modal-poema')) return;
+            triggerPixelHeart(e.clientX, e.clientY);
+        });
+
+        window.addEventListener('touchstart', (e) => {
+            if (!appIniciada) return;
+            const t = e.touches && e.touches[0];
+            if (t && (t.target === btnPoema || t.target.closest('#modal-poema'))) return;
+            if (t) {
+                triggerPixelHeart(t.clientX, t.clientY);
+            }
+        }, { passive: true });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
